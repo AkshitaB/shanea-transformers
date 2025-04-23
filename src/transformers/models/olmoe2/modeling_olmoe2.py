@@ -252,12 +252,16 @@ class Olmoe2SparseMoeBlock(nn.Module):
         self.norm_topk_prob = config.norm_topk_prob
         self.gate = nn.Linear(config.hidden_size, self.num_experts, bias=False)
         self.experts = nn.ModuleList([Olmoe2MLP(config) for _ in range(self.num_experts)])
+        self.expert_bias = nn.Parameter(torch.empty(self.num_experts - 1, 1, device=self.gate.device))
 
     def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
         batch_size, sequence_length, hidden_dim = hidden_states.shape
         hidden_states = hidden_states.view(-1, hidden_dim)
         # router_logits: (batch * sequence_length, n_experts)
         router_logits = self.gate(hidden_states)
+
+        constrained_bias = torch.minimum(self.expert_bias, torch.tensor(0.0, device=self.expert_bias.device))
+        router_logits[:, 1:] += constrained_bias.T
 
         routing_weights = F.softmax(router_logits, dim=1, dtype=torch.float)
         routing_weights, selected_experts = torch.topk(routing_weights, self.top_k, dim=-1)
