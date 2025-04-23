@@ -137,7 +137,7 @@ def write_model(model_path, input_base_path, tokenizer_path=None, safe_serializa
             f"model.layers.{layer_i}.self_attn.q_norm.weight": loaded[f"transformer.blocks.{layer_i}.q_norm.weight"],
             f"model.layers.{layer_i}.self_attn.k_norm.weight": loaded[f"transformer.blocks.{layer_i}.k_norm.weight"],
             f"model.layers.{layer_i}.mlp.gate.weight": loaded[f"transformer.blocks.{layer_i}.ffn.router.layer.weight"],
-            f"model.layers.{layer_i}.mlp.gate.expert_bias": loaded[f"transformer.blocks.{layer_i}.ffn.router.layer.expert_bias"],
+            f"model.layers.{layer_i}.mlp.expert_bias": loaded[f"transformer.blocks.{layer_i}.ffn.router.layer.expert_bias"],
             f"model.layers.{layer_i}.input_layernorm.weight": loaded[f"transformer.blocks.{layer_i}.attn_norm.weight"],
             f"model.layers.{layer_i}.post_attention_layernorm.weight": loaded[
                 f"transformer.blocks.{layer_i}.ff_norm.weight"
